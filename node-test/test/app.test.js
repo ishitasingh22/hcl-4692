@@ -1,7 +1,27 @@
-import {greet, greetHindi} from '../app.js';
-import {describe, test} from 'node:test';
+import {greet, greetHindi, processOrder} from '../app.js';
+import {describe, mock, test} from 'node:test';
 import assert from 'node:assert';
 
+describe('order feature', () => {
+  test('processOrder should return payment info', () => {
+    const mockDependency = {
+      processPayment: mock.fn((amount) => {
+      console.log('Mocked processPayment called with amount:', amount);
+      return {
+        status: 'success',
+        amount: amount,
+        transactionId: 'mocked-transaction-id',
+      };
+      }),
+    };
+    const orderData = { amount: 100 };
+
+    const paymentInfo = processOrder(orderData, mockDependency);
+    assert.strictEqual(paymentInfo.status, 'success');
+    assert.strictEqual(paymentInfo.amount, 100);
+    assert.strictEqual(paymentInfo.transactionId, 'mocked-transaction-id');
+  });
+});
 //nameless function ()=>{}
 describe('greet function', () => {
   test('greet function should return greeting message', () => {
